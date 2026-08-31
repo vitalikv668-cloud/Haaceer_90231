@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ransom Glitch</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#050505;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+/* =========================
+   BACKGROUND
+========================= */
+
+#game{
+    position:fixed;
+    inset:0;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            #27272a 0%,
+            #111114 40%,
+            #030304 100%
+        );
+
+    transition:transform .04s;
+}
+
+#game::before{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,.025) 0px,
+            rgba(255,255,255,.025) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+
+    pointer-events:none;
+}
+
+/* fake room */
+
+.room-light{
+    position:absolute;
+
+    width:200px;
+    height:30px;
+
+    border-radius:50%;
+
+    background:white;
+
+    filter:blur(30px);
+
+    opacity:.15;
+
+    animation:flicker 3s infinite;
+}
+
+.light1{
+    left:15%;
+    top:25%;
+}
+
+.light2{
+    right:15%;
+    top:25%;
+
+    animation-delay:1s;
+}
+
+@keyframes flicker{
+
+    0%,90%,100%{
+        opacity:.15;
+    }
+
+    92%{
+        opacity:.02;
+    }
+
+    94%{
+        opacity:.2;
+    }
+}
+
+/* =========================
+   SCANLINES
+========================= */
+
+#scanlines{
+
+    position:absolute;
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:200;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,.035) 0px,
+            rgba(255,255,255,.035) 1px,
+            transparent 1px,
+            transparent 5px
+        );
+
+    opacity:.45;
+}
+
+/* =========================
+   RGB GLITCH
+========================= */
+
+.rgb{
+
+    position:absolute;
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:190;
+
+    opacity:0;
+
+    mix-blend-mode:screen;
+}
+
+.rgb.red{
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255,0,0,.12) 50%,
+            transparent 100%
+        );
+}
+
+.rgb.blue{
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(0,100,255,.12) 50%,
+            transparent 100%
+        );
+}
+
+/* =========================
+   RANDOM GLITCH BARS
+========================= */
+
+#glitchBars{
+
+    position:absolute;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:210;
+}
+
+.glitchBar{
+
+    position:absolute;
+
+    height:3px;
+
+    background:white;
+
+    opacity:.7;
+
+    box-shadow:
+        20px 0 red,
+        -20px 0 blue;
+
+    animation:barGlitch .15s steps(2);
+}
+
+@keyframes barGlitch{
+
+    0%{
+        transform:translateX(-20px);
+    }
+
+    50%{
+        transform:translateX(30px);
+    }
+
+    100%{
+        transform:translateX(-10px);
+    }
+}
+
+/* =========================
+   RED ATTACK
+========================= */
+
+#redAttack{
+
+    position:absolute;
+
+    inset:0;
+
+    background:red;
+
+    opacity:0;
+
+    z-index:150;
+
+    pointer-events:none;
+}
+
+.attackFlash{
+
+    animation:redFlash .12s steps(2) 7;
+}
+
+@keyframes redFlash{
+
+    0%,100%{
+        opacity:0;
+    }
+
+    50%{
+        opacity:.4;
+    }
+}
+
+/* =========================
+   ATTACK TEXT
+========================= */
+
+#attackText{
+
+    position:absolute;
+
+    z-index:300;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    text-align:center;
+
+    opacity:0;
+
+    pointer-events:none;
+}
+
+.attackTitle{
+
+    font-size:clamp(35px,8vw,80px);
+
+    font-weight:1000;
+
+    color:#ff2020;
+
+    letter-spacing:.12em;
+
+    text-shadow:
+        5px 0 blue,
+        -5px 0 red,
+        0 0 25px red;
+}
+
+.attackSub{
+
+    margin-top:15px;
+
+    font-family:monospace;
+
+    color:#ddd;
+
+    font-size:14px;
+}
+
+.attackShow{
+
+    animation:attackAnimation 1.5s forwards;
+}
+
+@keyframes attackAnimation{
+
+    0%{
+        opacity:0;
+        transform:
+            translate(-50%,-50%)
+            scale(1.4);
+    }
+
+    15%{
+        opacity:1;
+    }
+
+    30%{
+        transform:
+            translate(-53%,-49%)
+            scale(.95);
+    }
+
+    40%{
+        transform:
+            translate(-48%,-52%)
+            scale(1.05);
+    }
+
+    70%{
+        opacity:1;
+    }
+
+    100%{
+        opacity:0;
+        transform:
+            translate(-50%,-50%)
+            scale(.8);
+    }
+}
+
+/* =========================
+   LOADING
+========================= */
+
+#loading{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:250;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:rgba(0,0,0,.86);
+}
+
+.loadingBox{
+
+    width:min(520px,85vw);
+
+    text-align:center;
+
+    font-family:monospace;
+
+    animation:loadingGlitch .12s infinite steps(2);
+}
+
+.loadingTitle{
+
+    font-size:clamp(18px,4vw,30px);
+
+    font-weight:bold;
+
+    letter-spacing:.12em;
+}
+
+.loadingText{
+
+    margin-top:15px;
+
+    color:#888;
+
+    min-height:20px;
+}
+
+.loadingBar{
+
+    margin-top:20px;
+
+    height:6px;
+
+    background:#252525;
+
+    overflow:hidden;
+}
+
+#loadingProgress{
+
+    height:100%;
+
+    width:0%;
+
+    background:white;
+
+    box-shadow:
+        0 0 15px white;
+}
+
+#loadingPercent{
+
+    margin-top:8px;
+
+    color:#666;
+
+    font-size:12px;
+}
+
+@keyframes loadingGlitch{
+
+    0%{
+        transform:translate(0);
+    }
+
+    25%{
+        transform:translate(3px,-1px);
+    }
+
+    50%{
+        transform:translate(-4px,2px);
+    }
+
+    75%{
+        transform:translate(2px,1px);
+    }
+
+    100%{
+        transform:translate(0);
+    }
+}
+
+/* =========================
+   SPAM WINDOWS
+========================= */
+
+#spam{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:350;
+
+    pointer-events:none;
+}
+
+.window{
+
+    position:absolute;
+
+    width:210px;
+
+    min-height:95px;
+
+    padding:10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #151515,
+            #080808
+        );
+
+    border:1px solid #777;
+
+    box-shadow:
+        0 0 15px rgba(0,0,0,.8),
+        4px 0 red,
+        -4px 0 blue;
+
+    font-family:monospace;
+
+    font-size:11px;
+
+    animation:
+        windowGlitch
+        .12s
+        steps(2)
+        infinite;
+
+    overflow:hidden;
+}
+
+.windowTitle{
+
+    color:#ff3030;
+
+    font-weight:bold;
+
+    margin-bottom:7px;
+}
+
+.windowCode{
+
+    color:#aaa;
+
+    line-height:1.5;
+}
+
+@keyframes windowGlitch{
+
+    0%{
+        transform:translate(0);
+    }
+
+    25%{
+        transform:translate(-3px,1px);
+    }
+
+    50%{
+        transform:translate(4px,-2px);
+    }
+
+    75%{
+        transform:translate(-1px,3px);
+    }
+
+    100%{
+        transform:translate(0);
+    }
+}
+
+/* =========================
+   RANSOM
+========================= */
+
+#ransom{
+
+    position:absolute;
+
+    z-index:500;
+
+    left:50%;
+    top:50%;
+
+    transform:
+        translate(-50%,-50%)
+        scale(.7);
+
+    width:min(470px,88vw);
+
+    display:none;
+
+    opacity:0;
+}
+
+.ransomCard{
+
+    background:
+        linear-gradient(
+            145deg,
+            #151515,
+            #090909
+        );
+
+    border:1px solid #4a4a4a;
+
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.9),
+        0 0 40px rgba(255,0,0,.12);
+
+    overflow:hidden;
+}
+
+.ransomHeader{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:13px 15px;
+
+    background:#202020;
+
+    border-bottom:1px solid #333;
+
+    font-family:monospace;
+
+    font-size:12px;
+
+    letter-spacing:.1em;
+}
+
+.ransomHeader span:last-child{
+
+    color:#666;
+}
+
+.ransomBody{
+
+    padding:30px 25px;
+
+    text-align:center;
+}
+
+.warning{
+
+    width:60px;
+    height:60px;
+
+    margin:auto;
+
+    display:grid;
+
+    place-items:center;
+
+    border:2px solid red;
+
+    color:red;
+
+    font-size:30px;
+
+    box-shadow:
+        0 0 25px rgba(255,0,0,.2);
+}
+
+.ransomTitle{
+
+    margin-top:20px;
+
+    color:#ff3030;
+
+    font-size:clamp(25px,6vw,42px);
+
+    line-height:.95;
+
+    font-weight:1000;
+
+    letter-spacing:.06em;
+
+    text-shadow:
+        3px 0 blue,
+        -3px 0 red;
+}
+
+.description{
+
+    margin-top:20px;
+
+    color:#888;
+
+    font-family:monospace;
+
+    font-size:11px;
+
+    line-height:1.7;
+}
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:10px;
+
+    margin-top:22px;
+}
+
+.stat{
+
+    background:#1b1b1b;
+
+    border:1px solid #303030;
+
+    padding:13px;
+}
+
+.statLabel{
+
+    color:#666;
+
+    font:10px monospace;
+}
+
+.statValue{
+
+    margin-top:5px;
+
+    font:700 18px monospace;
+}
+
+#timer{
+
+    color:#ff3030;
+}
+
+#pay{
+
+    width:100%;
+
+    margin-top:12px;
+
+    padding:15px;
+
+    border:0;
+
+    background:#eee;
+
+    color:#080808;
+
+    font-weight:1000;
+
+    letter-spacing:.12em;
+
+    cursor:pointer;
+}
+
+#pay:hover{
+
+    background:white;
+}
+
+#message{
+
+    min-height:18px;
+
+    margin-top:10px;
+
+    color:#777;
+
+    font:11px monospace;
+}
+
+/* ransom glitch */
+
+.ransomGlitch{
+
+    animation:
+        ransomShake
+        .08s
+        steps(2)
+        infinite;
+}
+
+@keyframes ransomShake{
+
+    0%{
+        transform:
+            translate(-50%,-50%)
+            translate(0);
+    }
+
+    25%{
+        transform:
+            translate(-50%,-50%)
+            translate(-7px,2px);
+    }
+
+    50%{
+        transform:
+            translate(-50%,-50%)
+            translate(6px,-2px);
+    }
+
+    75%{
+        transform:
+            translate(-50%,-50%)
+            translate(-2px,4px);
+    }
+
+    100%{
+        transform:
+            translate(-50%,-50%)
+            translate(0);
+    }
+}
+
+/* =========================
+   COMPLETE
+========================= */
+
+#complete{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:600;
+
+    display:none;
+
+    place-items:center;
+
+    background:rgba(0,0,0,.8);
+
+    text-align:center;
+}
+
+.completeTitle{
+
+    font-size:35px;
+
+    font-weight:1000;
+
+    letter-spacing:.1em;
+}
+
+.completeText{
+
+    margin-top:10px;
+
+    color:#888;
+
+    font-family:monospace;
+
+    font-size:12px;
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+
+    position:absolute;
+
+    z-index:50;
+
+    left:20px;
+
+    top:20px;
+
+    font-family:monospace;
+
+    color:#888;
+}
+
+#money{
+
+    margin-top:5px;
+
+    color:white;
+
+    font-size:18px;
+}
+
+#start{
+
+    position:absolute;
+
+    z-index:700;
+
+    right:20px;
+
+    bottom:20px;
+
+    padding:12px 18px;
+
+    background:#151515;
+
+    color:#ddd;
+
+    border:1px solid #444;
+
+    cursor:pointer;
+
+    font-family:monospace;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div class="room-light light1"></div>
+    <div class="room-light light2"></div>
+
+    <div id="hud">
+
+        PLAYER
+
+        <div id="money">
+            CASH: $100
+        </div>
+
+    </div>
+
+    <div id="redAttack"></div>
+
+    <div id="attackText">
+
+        <div class="attackTitle">
+            SYSTEM ATTACK
+        </div>
+
+        <div class="attackSub">
+            UNAUTHORIZED PROCESS DETECTED
+        </div>
+
+    </div>
+
+    <div id="loading">
+
+        <div class="loadingBox">
+
+            <div class="loadingTitle">
+                ENCRYPTING USER DATA
+            </div>
+
+            <div
+                class="loadingText"
+                id="loadingText">
+                initializing...
+            </div>
+
+            <div class="loadingBar">
+
+                <div id="loadingProgress"></div>
+
+            </div>
+
+            <div id="loadingPercent">
+                0%
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="spam"></div>
+
+    <div id="ransom">
+
+        <div class="ransomCard">
+
+            <div class="ransomHeader">
+
+                <span>
+                    RANSOM.EXE
+                </span>
+
+                <span>
+                    PID: 0x91A2
+                </span>
+
+            </div>
+
+            <div class="ransomBody">
+
+                <div class="warning">
+                    !
+                </div>
+
+                <div class="ransomTitle">
+
+                    YOUR ITEMS<br>
+                    HAVE BEEN<br>
+                    ENCRYPTED
+
+                </div>
+
+                <div class="description">
+
+                    YOUR DATA HAS BEEN LOCKED<br>
+
+                    BY AN UNKNOWN PROCESS.<br>
+
+                    COMPLETE THE PAYMENT<br>
+
+                    TO RESTORE ACCESS.
+
+                </div>
+
+                <div class="stats">
+
+                    <div class="stat">
+
+                        <div class="statLabel">
+                            REQUIRED
+                        </div>
+
+                        <div class="statValue">
+                            $10
+                        </div>
+
+                    </div>
+
+                    <div class="stat">
+
+                        <div class="statLabel">
+                            TIME
+                        </div>
+
+                        <div
+                            class="statValue"
+                            id="timer">
+
+                            01:00
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button id="pay">
+                    PAY $10
+                </button>
+
+                <div id="message"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="complete">
+
+        <div>
+
+            <div class="completeTitle">
+                ACCESS RESTORED
+            </div>
+
+            <div class="completeText">
+                PAYMENT ACCEPTED · $10 DEDUCTED
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="scanlines"></div>
+
+    <div class="rgb red"></div>
+    <div class="rgb blue"></div>
+
+    <div id="glitchBars"></div>
+
+    <button id="start">
+        TRIGGER RANSOM
+    </button>
+
+</div>
+
+<script>
+
+let money = 100;
+
+let time = 60;
+
+let timerInterval;
+
+let running = false;
+
+const game =
+    document.getElementById("game");
+
+const attack =
+    document.getElementById("redAttack");
+
+const attackText =
+    document.getElementById("attackText");
+
+const loading =
+    document.getElementById("loading");
+
+const progress =
+    document.getElementById("loadingProgress");
+
+const percent =
+    document.getElementById("loadingPercent");
+
+const loadingText =
+    document.getElementById("loadingText");
+
+const spam =
+    document.getElementById("spam");
+
+const ransom =
+    document.getElementById("ransom");
+
+const timer =
+    document.getElementById("timer");
+
+const payButton =
+    document.getElementById("pay");
+
+const message =
+    document.getElementById("message");
+
+const complete =
+    document.getElementById("complete");
+
+const moneyText =
+    document.getElementById("money");
+
+const startButton =
+    document.getElementById("start");
+
+
+/* =========================
+   RANDOM GLITCH
+========================= */
+
+function randomGlitch(){
+
+    if(!running) return;
+
+    game.style.transform =
+        `translate(
+            ${Math.random()*10-5}px,
+            ${Math.random()*8-4}px
+        )`;
+
+    document.querySelector(".rgb.red")
+        .style.opacity =
+        Math.random()*.8;
+
+    document.querySelector(".rgb.blue")
+        .style.opacity =
+        Math.random()*.8;
+
+    if(Math.random()<.7){
+
+        createGlitchBar();
+
+    }
+
+    setTimeout(randomGlitch,30+Math.random()*150);
+}
+
+
+/* =========================
+   GLITCH BAR
+========================= */
+
+function createGlitchBar(){
+
+    const bar =
+        document.createElement("div");
+
+    bar.className="glitchBar";
+
+    bar.style.top =
+        Math.random()*100+"vh";
+
+    bar.style.left =
+        Math.random()*90+"vw";
+
+    bar.style.width =
+        Math.random()*250+20+"px";
+
+    document
+        .getElementById("glitchBars")
+        .appendChild(bar);
+
+    setTimeout(()=>{
+
+        bar.remove();
+
+    },150);
+}
+
+
+/* =========================
+   SPAM WINDOW
+========================= */
+
+function createSpam(){
+
+    const win =
+        document.createElement("div");
+
+    win.className="window";
+
+    win.style.left =
+        Math.random()*82+"vw";
+
+    win.style.top =
+        Math.random()*78+"vh";
+
+    const errors = [
+
+        "ACCESS_VIOLATION",
+
+        "SYSTEM_FAILURE",
+
+        "KERNEL_ERROR",
+
+        "MEMORY_CORRUPTION",
+
+        "ENCRYPTION_ERROR",
+
+        "UNKNOWN_PROCESS",
+
+        "FIREWALL_BYPASS",
+
+        "AUTH_FAILED",
+
+        "NETWORK_ERROR",
+
+        "RANSOM_SERVICE"
+
+    ];
+
+    const title =
+        errors[
+            Math.floor(
+                Math.random()*errors.length
+            )
+        ];
+
+    win.innerHTML = `
+
+        <div class="windowTitle">
+            ${title}
+        </div>
+
+        <div class="windowCode">
+
+            0x${Math.floor(
+                Math.random()*999999
+            ).toString(16).toUpperCase()}
+
+            <br>
+
+            PROCESS:
+            ${Math.floor(Math.random()*99999)}
+
+            <br>
+
+            STATUS:
+            ████ FAILED
+
+            <br>
+
+            ${Math.random()
+                .toString(36)
+                .repeat(3)}
+
+        </div>
+
+    `;
+
+    spam.appendChild(win);
+
+    setTimeout(()=>{
+
+        win.remove();
+
+    },700+Math.random()*1400);
+}
+
+
+/* =========================
+   SPAM STORM
+========================= */
+
+function spamStorm(amount){
+
+    for(let i=0;i<amount;i++){
+
+        setTimeout(()=>{
+
+            createSpam();
+
+        },i*60);
+
+    }
+
+}
+
+
+/* =========================
+   ATTACK
+========================= */
+
+async function startRansom(){
+
+    if(running) return;
+
+    running=true;
+
+    startButton.disabled=true;
+
+    spam.innerHTML="";
+
+    ransom.style.display="none";
+
+    complete.style.display="none";
+
+    randomGlitch();
+
+    /* RED FLASH */
+
+    attack.classList.remove(
+        "attackFlash"
+    );
+
+    void attack.offsetWidth;
+
+    attack.classList.add(
+        "attackFlash"
+    );
+
+    /* ATTACK TEXT */
+
+    attackText.classList.add(
+        "attackShow"
+    );
+
+    spamStorm(8);
+
+    await sleep(1500);
+
+    attackText.classList.remove(
+        "attackShow"
+    );
+
+    /* LOADING */
+
+    loading.style.display="flex";
+
+    let p=0;
+
+    const loadingMessages=[
+
+        "initializing encryption...",
+
+        "reading player inventory...",
+
+        "connecting to server...",
+
+        "bypassing security...",
+
+        "encrypting items...",
+
+        "locking inventory...",
+
+        "uploading encryption key...",
+
+        "finalizing..."
+
+    ];
+
+    while(p<100){
+
+        let jump =
+            Math.random()*7;
+
+        p+=jump;
+
+        if(p>100)
+            p=100;
+
+        progress.style.width=
+            p+"%";
+
+        percent.innerText=
+            Math.floor(p)+"%";
+
+        loadingText.innerText=
+            loadingMessages[
+                Math.min(
+                    loadingMessages.length-1,
+                    Math.floor(p/14)
+                )
+            ];
+
+        /* RANDOM LAG */
+
+        let delay =
+            20+
+            Math.random()*100;
+
+        if(
+            Math.random()<.15
+        ){
+
+            delay+=400;
+
+            loadingText.innerText+=
+                " ███ ERROR";
+
+            spamStorm(2);
+
+        }
+
+        /* RANDOM BACKTRACK */
+
+        if(
+            Math.random()<.08 &&
+            p>20 &&
+            p<90
+        ){
+
+            p-=Math.random()*8;
+
+        }
+
+        await sleep(delay);
+
+    }
+
+    await sleep(400);
+
+    loading.style.display="none";
+
+    /* HUGE SPAM */
+
+    spamStorm(35);
+
+    await sleep(900);
+
+    /* RANSOM */
+
+    ransom.style.display="block";
+
+    ransom.style.opacity="1";
+
+    ransom.style.transform=
+        "translate(-50%,-50%) scale(1)";
+
+    /* FIRST GLITCH */
+
+    setTimeout(()=>{
+
+        ransom.classList.add(
+            "ransomGlitch"
+        );
+
+        spamStorm(10);
+
+        setTimeout(()=>{
+
+            ransom.classList.remove(
+                "ransomGlitch"
+            );
+
+        },900);
+
+    },500);
+
+    startTimer();
+
+}
+
+
+/* =========================
+   TIMER
+========================= */
+
+function startTimer(){
+
+    clearInterval(timerInterval);
+
+    time=60;
+
+    updateTimer();
+
+    timerInterval=setInterval(()=>{
+
+        time--;
+
+        updateTimer();
+
+        /* LAST 10 SEC */
+
+        if(time<=10 && time>0){
+
+            ransom.classList.add(
+                "ransomGlitch"
+            );
+
+            spamStorm(3);
+
+            setTimeout(()=>{
+
+                ransom.classList.remove(
+                    "ransomGlitch"
+                );
+
+            },300);
+
+        }
+
+        if(time<=0){
+
+            clearInterval(
+                timerInterval
+            );
+
+            payButton.disabled=true;
+
+            message.innerText=
+                "TIME EXPIRED — ACCESS LOCKED";
+
+            message.style.color=
+                "red";
+
+        }
+
+    },1000);
+
+}
+
+
+/* =========================
+   TIMER TEXT
+========================= */
+
+function updateTimer(){
+
+    let minutes=
+        Math.floor(time/60);
+
+    let seconds=
+        time%60;
+
+    timer.innerText=
+        String(minutes).padStart(2,"0")
+        +":"
+        +
+        String(seconds).padStart(2,"0");
+
+}
+
+
+/* =========================
+   PAY
+========================= */
+
+payButton.onclick =
+async function(){
+
+    if(time<=0)
+        return;
+
+    if(money<10){
+
+        message.innerText=
+            "INSUFFICIENT CASH";
+
+        message.style.color=
+            "red";
+
+        ransom.classList.add(
+            "ransomGlitch"
+        );
+
+        setTimeout(()=>{
+
+            ransom.classList.remove(
+                "ransomGlitch"
+            );
+
+        },400);
+
+        return;
+
+    }
+
+    clearInterval(
+        timerInterval
+    );
+
+    payButton.disabled=true;
+
+    money-=10;
+
+    moneyText.innerText=
+        "CASH: $"+money;
+
+    message.innerText=
+        "PAYMENT VERIFIED...";
+
+    message.style.color=
+        "#9f9";
+
+    ransom.classList.add(
+        "ransomGlitch"
+    );
+
+    spamStorm(15);
+
+    await sleep(1000);
+
+    ransom.style.display="none";
+
+    spam.innerHTML="";
+
+    document.querySelector(
+        ".rgb.red"
+    ).style.opacity=0;
+
+    document.querySelector(
+        ".rgb.blue"
+    ).style.opacity=0;
+
+    game.style.transform="";
+
+    complete.style.display="grid";
+
+    await sleep(2000);
+
+    complete.style.display="none";
+
+    running=false;
+
+    startButton.disabled=false;
+
+};
+
+
+/* =========================
+   START BUTTON
+========================= */
+
+startButton.onclick =
+startRansom;
+
+
+/* =========================
+   SLEEP
+========================= */
+
+function sleep(ms){
+
+    return new Promise(
+        resolve=>setTimeout(
+            resolve,
+            ms
+        )
+    );
+
+}
+
+
+/* =========================
+   AUTO START
+========================= */
+
+setTimeout(
+    startRansom,
+    1000
+);
+
+</script>
+
+</body>
+</html>
